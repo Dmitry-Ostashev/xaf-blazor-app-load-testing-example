@@ -10,6 +10,7 @@ kind: Ingress
 metadata:
   name: ingress-srv
   annotations:
+    nginx.ingress.kubernetes.io/default-backend: ingress-nginx-controller
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "affinity"
@@ -18,8 +19,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: xafloadtesting.io
-    http:
+  - http:
       paths:
       - pathType: Prefix
         path: "/"
