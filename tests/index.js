@@ -7,7 +7,9 @@ const hostname    = process.argv[2] || DEFAULT_HOSTNAME;
 const concurrency = process.argv[3] && parseInt(process.argv[3]) || DEFAULT_CONCURRENCY;
 const headless    = process.argv[4] !== 'false';
 
-runTests(`http://${hostname}/`, concurrency, headless)
+const url = hostname.startsWith('http') ? hostname : `http://${hostname}`;
+
+runTests(url, concurrency, headless)
     .catch(err => {
         console.log(err);
         process.exit(1);
