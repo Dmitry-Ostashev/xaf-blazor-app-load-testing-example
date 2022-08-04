@@ -13,11 +13,16 @@ spec:
         app: loadtestingapp
     spec:
       containers:
-        - name: loadtestingapp
-          image: ostashev/xafloadtesting:latest
-          env:
-            - name: CONNECTION_STRING
-              value: K8SMsSqlConnectionString
+      - name: loadtestingapp
+        image: ostashev/xafloadtesting:latest
+        env:
+          - name: CONNECTION_STRING
+            value: K8SMsSqlConnectionString
+        resources:
+          requests:
+            cpu: 400m
+          limits:
+            cpu: 800m
 ---
 apiVersion: v1
 kind: Service
