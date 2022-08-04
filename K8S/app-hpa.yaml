@@ -8,12 +8,11 @@ spec:
     kind: Deployment
     name: app-depl
   minReplicas: 1
-  maxReplicas: 10
-  # targetCPUUtilizationPercentage: 50
+  maxReplicas: 20
   metrics:
   - type: Resource
     resource:
-      name: cpu
+      name: memory
       target:
         type: Utilization
         averageUtilization: 75
