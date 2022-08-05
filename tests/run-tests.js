@@ -34,7 +34,7 @@ async function runTests(url, concurrency, headless) {
     let succededTests = 0;
 
 
-    await Promise.all(new Array(concurrency).fill('').map((item, index) => cluster.execute(url, async ({ page, data: url }) => {
+    await Promise.all(new Array(concurrency).fill('').map((item, index) => new Promise(resolve => setTimeout(() => resolve(cluster.execute(url, async ({ page, data: url }) => {
         try {
             await page.setViewport({ width: 800, height: 1200});
 
@@ -55,7 +55,7 @@ async function runTests(url, concurrency, headless) {
             console.log(`Worker ${index} failed.`);
             console.log(err);
         }
-    })));
+    })), index * 2000))));
 
     const duration    = (Date.now() - startTime) / 1000;
     const averageTime = workerTimings.reduce((acc, val) => acc+=val) / workerTimings.length;
