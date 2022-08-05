@@ -55,7 +55,7 @@ async function runTests(url, concurrency, headless) {
             console.log(`Worker ${index} failed.`);
             console.log(err);
         }
-    })), index * 4000))));
+    })), index * 3000))));
 
     const duration    = (Date.now() - startTime) / 1000;
     const averageTime = workerTimings.reduce((acc, val) => acc+=val) / workerTimings.length;
