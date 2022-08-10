@@ -9,6 +9,8 @@ namespace LoadTestingApp.Blazor.Server;
 
 public class LoadTestingAppBlazorApplication : BlazorApplication {
     public LoadTestingAppBlazorApplication() {
+        Console.WriteLine("App Instance");
+
         ApplicationName = "LoadTestingApp";
         CheckCompatibilityType = DevExpress.ExpressApp.CheckCompatibilityType.DatabaseSchema;
         DatabaseVersionMismatch += LoadTestingAppBlazorApplication_DatabaseVersionMismatch;
