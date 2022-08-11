@@ -24,7 +24,7 @@ async function runTests(url, concurrency, headless) {
         concurrency: Cluster.CONCURRENCY_CONTEXT,
         maxConcurrency: concurrency,
         monitor: false,
-        timeout: 1200000,
+        timeout: 6000000,
         defaultViewport: null
     });
 
@@ -36,18 +36,35 @@ async function runTests(url, concurrency, headless) {
 
     await Promise.all(new Array(concurrency).fill('').map((item, index) => new Promise(resolve => setTimeout(() => resolve(cluster.execute(url, async ({ page, data: url }) => {
         try {
+            console.log(`Worker ${index} started`);
+
             await page.setViewport({ width: 800, height: 1200});
 
             const workerStartTime = new Date();
 
-            await runTestFunc(page, `${url}/StickyNote_ListView`, index, listViewTest);
-            await runTestFunc(page, `${url}/Employee_ListView`, index, detailViewTest);
+            let workerErrors = [];
 
+            for (let i = 0; i < 1; i++) {
+                try {
+                    await runTestFunc(page, `${url}/StickyNote_ListView`, index, listViewTest);
+                    await runTestFunc(page, `${url}/Employee_ListView`, index, detailViewTest);
+                }
+                catch (e) {
+                    workerErrors.push(e);
+                }
+            }
             const workerDuration = (Date.now() - workerStartTime.getTime()) / 1000;
 
-            succededTests++;
+            if (!workerErrors.length)
+                succededTests++;
 
             workerTimings.push(workerDuration);
+
+            if (workerErrors.length) {
+                console.log(`Worker ${index} error: ${workerErrors.length}`);
+
+                throw workerErrors[0];
+            }
 
             console.log(`Worker ${index} started at ${workerStartTime.toLocaleTimeString()} finished successfully after ${workerDuration} seconds.`);
         }
@@ -55,7 +72,7 @@ async function runTests(url, concurrency, headless) {
             console.log(`Worker ${index} failed.`);
             console.log(err);
         }
-    })), index * 3000))));
+    })), index * 5000))));
 
     const duration    = (Date.now() - startTime) / 1000;
     const averageTime = workerTimings.reduce((acc, val) => acc+=val) / workerTimings.length;

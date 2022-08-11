@@ -1,5 +1,6 @@
 const DXGRID           = '.dxbs-grid .card';
-const NEXT_PAGE_BUTTON = '[data-args="PBN"] div svg';
+const NEXT_PAGE_BUTTON = '[aria-label="Next page"] div svg';
+// const PREV_PAGE_BUTTON = '[aria-label="Previous page"] div svg';
 
 async function listViewTest(page) {
     await page.waitForSelector(DXGRID, { timeout: 60000 });
@@ -20,6 +21,19 @@ async function listViewTest(page) {
 
         await page.waitForTimeout(1000);
     }
+
+    // for (let i = 20; i > 1; i--) {
+    //     await page.waitForSelector(PREV_PAGE_BUTTON);
+
+    //     const nextPageButton = await page.$(PREV_PAGE_BUTTON);
+    //     await nextPageButton.click();
+
+    //     await page.waitForTimeout(500);
+
+    //     await page.waitForFunction(`document.querySelector(".dxbs-grid .page-link input").value === "${i - 1}"`);
+
+    //     await page.waitForTimeout(1000);
+    // }
 }
 
 module.exports = listViewTest;
