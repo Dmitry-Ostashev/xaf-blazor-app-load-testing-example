@@ -46,7 +46,7 @@ async function runTests(url, concurrency, headless) {
 
             for (let i = 0; i < 1; i++) {
                 try {
-                    await runTestFunc(page, `${url}/StickyNote_ListView`, index, listViewTest);
+                    // await runTestFunc(page, `${url}/StickyNote_ListView`, index, listViewTest);
                     await runTestFunc(page, `${url}/Employee_ListView`, index, detailViewTest);
                 }
                 catch (e) {
@@ -61,18 +61,21 @@ async function runTests(url, concurrency, headless) {
             workerTimings.push(workerDuration);
 
             if (workerErrors.length) {
-                console.log(`Worker ${index} error: ${workerErrors.length}`);
+                console.log(`Worker ${index} errors: ${workerErrors.length}`);
 
-                throw workerErrors[0];
+                for (let err of workerErrors)
+                    console.log(err);
+
+                throw new Error('Fail');
             }
 
             console.log(`Worker ${index} started at ${workerStartTime.toLocaleTimeString()} finished successfully after ${workerDuration} seconds.`);
         }
         catch (err) {
             console.log(`Worker ${index} failed.`);
-            console.log(err);
+            // console.log(err);
         }
-    })), index * 5000))));
+    })), index * 20000))));
 
     const duration    = (Date.now() - startTime) / 1000;
     const averageTime = workerTimings.reduce((acc, val) => acc+=val) / workerTimings.length;
