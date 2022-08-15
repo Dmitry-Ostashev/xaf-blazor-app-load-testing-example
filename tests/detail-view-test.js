@@ -1,22 +1,31 @@
 async function detailViewTest(page) {
     const tryClickRow = async (rowNumber, attempts) => {
-        await page.waitForTimeout(1000);
+        let attempt = attempts;
 
-        await page.waitForXPath(`//td[contains(., 'Employee ${rowNumber}#')]`, { timeout: 30000 });
+        while (attempt > 0) {
+            await page.waitForTimeout(1000);
 
-        let row = await page.$x(`//td[contains(., 'Employee ${rowNumber}#')]`, { timeout: 30000 });
+            await page.waitForXPath(`//td[contains(., 'Employee ${rowNumber}#')]`, { timeout: 30000 });
 
-        try {
-            await row[0].click();
-        }
-        catch (e) {
-            console.log('CATCH!');
+            const row = await page.$x(`//td[contains(., 'Employee ${rowNumber}#')]`, { timeout: 30000 });
 
-            if (attempts > 0)
-                tryClickRow(attempts - 1);
+            try {
+                await row[0].click();
 
-            else
-                throw e;
+                await page.waitForSelector('input[name="FirstName"]', { timeout: 30000 });
+                await page.waitForSelector('.xaf-loading-content[style*="hidden"]', { timeout: 30000 });
+
+                return;
+            }
+            catch (e) {
+                console.log(`Reconnection attempt ${attempt}`);
+
+                await page.waitForTimeout(8000);
+                attempt--;
+
+                if (attempt < 1)
+                    throw e;
+            }
         }
     }
     const testFunc = async () => {
@@ -24,10 +33,8 @@ async function detailViewTest(page) {
             await page.waitForSelector('.dxbs-grid .card', { timeout: 30000 });
             await page.waitForSelector('.xaf-loading-content[style*="hidden"]', { timeout: 30000 });
 
-            await tryClickRow(i, 1);
+            await tryClickRow(i, 3);
 
-            await page.waitForSelector('input[name="FirstName"]', { timeout: 30000 });
-            await page.waitForSelector('.xaf-loading-content[style*="hidden"]', { timeout: 30000 });
             await page.waitForTimeout(1000);
             await page.goBack();
 
