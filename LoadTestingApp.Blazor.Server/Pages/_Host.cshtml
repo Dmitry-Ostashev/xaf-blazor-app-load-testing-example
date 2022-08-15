@@ -49,6 +49,8 @@
             <component type="typeof(BlazorError)" render-mode="Static" />
         </div>
 
+        <h1 id="blazor-reconnect-ui" style="display:none" />
+
         <script src="_framework/blazor.server.js" autostart="false"></script>
         <script>
             async function connectionDown(e) {
@@ -57,18 +59,23 @@
                 if (appEl)
                     appEl.style.display = 'none';
 
+                const reconnectEl = document.getElementById('blazor-reconnect-ui');
+
+                reconnectEl.style.display = 'inline';                
+
                 for (let i = 0; i < e.maxRetries; i++) {
-                    console.log("Waiting for reconnect attempt #"+(i+1)+" ...");
+
+                    reconnectEl.innerText = "Waiting for reconnect attempt #"+(i+1)+" ...";
 
                     await new Promise(resolve => setTimeout(resolve, e.retryIntervalMilliseconds));
                             
                     try {
-                        console.log("Starting Reconnect attempt #"+(i+1)+" ...");
+                        reconnectEl.innerText = "Starting Reconnect attempt #"+(i+1)+" ...";
 
                         const result = await window.Blazor.reconnect();
                                 
                         if (!result)
-                            console.error("Server Rejected");
+                            reconnectEl.innerText = "Server Rejected";
                         else
                             return;
                     }
@@ -88,6 +95,10 @@
 
                 if (appEl)
                     appEl.style.display = 'block';
+
+                const reconnectEl = document.getElementById('blazor-reconnect-ui');
+
+                reconnectEl.style.display = 'none';      
             }
 
             Blazor.start({
