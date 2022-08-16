@@ -4,7 +4,6 @@ WORKDIR /source
 
 # copy csproj and restore as distinct layers.
 COPY *.sln .
-COPY entrypoint.sh ./LoadTestingApp.Blazor.Server/
 COPY LoadTestingApp.Blazor.Server/*.csproj ./LoadTestingApp.Blazor.Server/
 COPY LoadTestingApp.Module/*.csproj ./LoadTestingApp.Module/
 RUN dotnet nuget add source $DX_NUGET_SOURCE -n devexpress-nuget
@@ -16,11 +15,9 @@ COPY LoadTestingApp.Blazor.Server/. ./LoadTestingApp.Blazor.Server/
 COPY LoadTestingApp.Module/. ./LoadTestingApp.Module/
 WORKDIR /source/LoadTestingApp.Blazor.Server
 RUN dotnet publish -c release -o /app --no-cache /restore
-COPY entrypoint.sh /app/
 
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 COPY --from=build /app ./
-RUN chmod +x entrypoint.sh
-ENTRYPOINT [ "./entrypoint.sh" ]
+ENTRYPOINT [ "dotnet", "LoadTestingApp.Blazor.Server.dll" ]
