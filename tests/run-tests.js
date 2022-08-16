@@ -24,7 +24,7 @@ async function runTests(url, concurrency, headless) {
         concurrency: Cluster.CONCURRENCY_CONTEXT,
         maxConcurrency: concurrency,
         monitor: false,
-        timeout: 6000000,
+        timeout: 8000000,
         defaultViewport: null
     });
 
