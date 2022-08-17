@@ -50,6 +50,10 @@ async function runTests(url, concurrency, headless) {
                     await runTestFunc(page, `${url}/Employee_ListView`, index, detailViewTest);
                 }
                 catch (e) {
+                    const url = await page.url();
+
+                    console.log(`Worker ${index} error. Url: ${url}`);
+
                     workerErrors.push(e);
                 }
             }
@@ -75,7 +79,7 @@ async function runTests(url, concurrency, headless) {
             console.log(`Worker ${index} failed.`);
             // console.log(err);
         }
-    })), index * 20000))));
+    })), index * 19000))));
 
     const duration    = (Date.now() - startTime) / 1000;
     const averageTime = workerTimings.reduce((acc, val) => acc+=val) / workerTimings.length;
