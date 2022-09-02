@@ -20,11 +20,11 @@ async function runTestFunc (page, url, instance, testFunc) {
 
 async function runTests(url, concurrency, headless) {
     const cluster = await Cluster.launch({
-        puppeteerOptions: { headless, slowMo: 50, args: ['--ignore-certificate-errors', '--start-maximized'] },
+        puppeteerOptions: { headless, args: ['--ignore-certificate-errors', '--start-maximized'] },
         concurrency: Cluster.CONCURRENCY_CONTEXT,
         maxConcurrency: concurrency,
         monitor: false,
-        timeout: 8000000,
+        timeout: 9000000,
         defaultViewport: null
     });
 
@@ -79,7 +79,7 @@ async function runTests(url, concurrency, headless) {
             console.log(`Worker ${index} failed.`);
             // console.log(err);
         }
-    })), index * 19000))));
+    })), index * 10000))));
 
     const duration    = (Date.now() - startTime) / 1000;
     const averageTime = workerTimings.reduce((acc, val) => acc+=val) / workerTimings.length;
