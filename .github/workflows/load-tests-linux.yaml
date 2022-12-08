@@ -14,7 +14,7 @@ on:
       workers:
         description: 'Workers'  
         required: true
-        default: '["worker_01"]'    
+        default: '[1]'    
 
 env:
   APP_URL: ${{ github.event.inputs.appUrl }}
