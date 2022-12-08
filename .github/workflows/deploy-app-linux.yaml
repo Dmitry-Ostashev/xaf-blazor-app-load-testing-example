@@ -25,15 +25,16 @@ jobs:
         run: echo ${{ env.LOCAL_IP_ADDRESS }}
       - name: Checkout
         uses: actions/checkout@v2
-      # - name: Set up MySql
-      #   run: |
-      #     sudo add-apt-repository main
-      #     sudo add-apt-repository universe
-      #     sudo add-apt-repository restricted
-      #     sudo add-apt-repository multiverse
-      #     sudo apt update
-      #     sudo apt install -y mysql-server
-      #     sudo mysql -e "CREATE USER 'testuser'@'localhost' IDENTIFIED BY 'qwerty1'; GRANT ALL PRIVILEGES ON *.* TO testuser@localhost; FLUSH PRIVILEGES;"
+      - name: Set up MySql
+        run: |
+          # sudo add-apt-repository main
+          # sudo add-apt-repository universe
+          # sudo add-apt-repository restricted
+          # sudo add-apt-repository multiverse
+          # sudo apt update
+          # sudo apt install -y mysql-server
+          sudo service mysql start
+          sudo mysql -e "CREATE USER 'testuser'@'localhost' IDENTIFIED BY 'qwerty1'; GRANT ALL PRIVILEGES ON *.* TO testuser@localhost; FLUSH PRIVILEGES;"
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
