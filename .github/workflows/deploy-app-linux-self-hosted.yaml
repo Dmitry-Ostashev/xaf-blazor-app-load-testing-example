@@ -1,20 +1,11 @@
-name: Build and Run Application on Linux (GitHub-hosted runner)
+name: Build and Run Application on Linux (Self-hosted runner)
 
 on:
   workflow_dispatch:
-    inputs:
-      concurrency:
-        description: 'Concurrency'  
-        required: true
-        default: '20'
-      workers:
-        description: 'Workers'  
-        required: true
-        default: '["worker_01"]'    
 
 jobs:
   run:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, xaf-load-testing]
     timeout-minutes: 40
     env:
       CONNECTION_STRING: MySqlConnectionString
@@ -25,6 +16,15 @@ jobs:
         run: echo ${{ env.LOCAL_IP_ADDRESS }}
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set up MySql
+        run: |
+          sudo add-apt-repository main
+          sudo add-apt-repository universe
+          sudo add-apt-repository restricted
+          sudo add-apt-repository multiverse
+          sudo apt update
+          sudo apt install -y mysql-server
+          sudo mysql -e "CREATE USER 'testuser'@'localhost' IDENTIFIED BY 'qwerty1'; GRANT ALL PRIVILEGES ON *.* TO testuser@localhost; FLUSH PRIVILEGES;"
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
@@ -49,4 +49,4 @@ jobs:
           workflow: Load Testing
           token: ${{ secrets.PERSONAL_TOKEN }}
           wait-for-completion: true
-          inputs: '{ "appUrl": "${{ env.LOCAL_IP_ADDRESS }}:5002", "concurrency": "${{ github.event.inputs.concurrency }}", "workers": "${{ github.event.inputs.workers }}" }'
+          inputs: '{ "appUrl": "${{ env.LOCAL_IP_ADDRESS }}:5002" }'
