@@ -11,20 +11,27 @@ const LOADING_INDICATOR_SELECTOR = `
 const PROPERTY_EDITOR_SELECTOR = '[data-item-name="%FIELD_CAPTION%"] + .dxbl-text-edit input';
 const ACTION_BUTTON_SELECTOR = '[data-action-name="%ACTION_CAPTION%"]';
 
-const NAVIGATION_LINK_SELECTOR = 'xaf-nav-link';
-const NAVIGATION_LINK_CLICK_AREA_SELECTOR = 'xaf-navigation-link-click-area';
+const NAVIGATION_LINK_CSS_CLASS = 'xaf-nav-link';
+const NAVIGATION_LINK_CLICK_AREA_CSS_CLASS = 'xaf-navigation-link-click-area';
 
 const CLOSE_TAB_BUTTON_SELECTOR = '.dxbl-tabs-close-button.xaf-close-tab-button';
-const TAB_HEADER_SELECTOR = '.xaf-tab-header-template.xaf.dxbl-btn-standalone ';
-
-const INLINE_ACTION_SELECTOR = '.xaf-inline-action button[data-action-name="%ACTION_CAPTION%"]';
+const TAB_HEADER_SELECTOR = `//div[contains(@class, 'xaf-tab-header-template')]`;
+const ACTIVE_TAB_HEADER_SELECTOR = `//dxbl-tab-item[contains(@class, 'dxbl-active')]${TAB_HEADER_SELECTOR}`;
 
 function getInlineActionSelector (title, rowText) {
     return `//div[contains(@class, 'dxbl-active')]//tr[contains(normalize-space(.), '${rowText}')]//div[contains(@class, 'xaf-inline-action')]//button[@data-action-name='%ACTION_CAPTION%']`.replace('%ACTION_CAPTION%', title);
 }
+function getActiveTabHeader () {}
 class PageModel {
     async waitForLoading (page) {
          await page.waitForSelector(LOADING_INDICATOR_SELECTOR, { hidden: true, timeout: 45000 });
+        await page.waitForFunction(() => {
+            const images = Array.from(document.images);
+            return images.every(img => img.complete && img.naturalWidth > 0);
+        }, { timeout: 10000 });
+    }
+    async waitForTabAppear (page, tabCaption) {
+        await page.locator(`xpath=${ACTIVE_TAB_HEADER_SELECTOR}//span[contains(normalize-space(.), '${tabCaption}')]`).wait();
     }
     async setEditorValue (page, title, value) {
         const selector = PROPERTY_EDITOR_SELECTOR.replace('%FIELD_CAPTION%', title);
@@ -43,14 +50,14 @@ class PageModel {
         await el.click();
         await this.waitForLoading(page);
     }
-    async navigate (page, caption) {
-        const xpath = `//div[contains(@class,'${NAVIGATION_LINK_SELECTOR}') and contains(., '${caption}')]/following-sibling::div[contains(@class,'${NAVIGATION_LINK_CLICK_AREA_SELECTOR}')]`;
+    async navigate (page, caption, expectedTabCaption) {
+        const xpath = `//div[contains(@class,'${NAVIGATION_LINK_CSS_CLASS}') and contains(., '${caption}')]/following-sibling::div[contains(@class,'${NAVIGATION_LINK_CLICK_AREA_CSS_CLASS}')]`;
 
         await page.locator(`xpath=${xpath}`).wait();
         await page.locator(`xpath=${xpath}`).click();
         await this.waitForLoading(page);
+        await this.waitForTabAppear(page, expectedTabCaption || caption);
     }
-
     async processRow (page, cellText) {
         const inlineActionSelector = getInlineActionSelector('Open', cellText);
 
@@ -67,6 +74,15 @@ class PageModel {
             await page.locator(`xpath=//td[contains(normalize-space(.), '${cellText}')]`).click();
         }
         await this.waitForLoading(page);
+    }
+    async closeTab (page) {
+        const xpath = `${ACTIVE_TAB_HEADER_SELECTOR}//button[contains(@class, 'xaf-close-tab-button')]`;
+
+        await page.locator(`xpath=${xpath}`).click();
+        await this.waitForLoading(page);
+    }
+    async delay(timeout) {
+        await new Promise(res => setTimeout(res, timeout));
     }
 }
 
