@@ -1,6 +1,7 @@
 const { Cluster }  = require('puppeteer-cluster');
 const listViewTest = require('./list-view-test');
 const detailViewTest = require('./detail-view-test');
+const navigationTest = require('./navigation-test');
 
 async function runTestFunc (page, url, instance, testFunc) {
     const { retry, takeScreenshot } = require('./utils');
@@ -20,7 +21,7 @@ async function runTestFunc (page, url, instance, testFunc) {
 
 async function runTests(url, concurrency, headless) {
     const cluster = await Cluster.launch({
-        puppeteerOptions: { headless, slowMo: 50, args: ['--ignore-certificate-errors', '--start-maximized'] },
+        puppeteerOptions: { headless, defaultViewport: null, /*slowMo: 20,*/ args: ['--ignore-certificate-errors', '--start-maximized'] },
         concurrency: Cluster.CONCURRENCY_CONTEXT,
         maxConcurrency: concurrency,
         monitor: false,
@@ -36,12 +37,13 @@ async function runTests(url, concurrency, headless) {
 
     await Promise.all(new Array(concurrency).fill('').map((item, index) => cluster.execute(url, async ({ page, data: url }) => {
         try {
-            await page.setViewport({ width: 800, height: 1200});
+            // await page.setViewport({ width: 800, height: 1200});
 
             const workerStartTime = new Date();
 
-            await runTestFunc(page, `${url}/StickyNote_ListView`, index, listViewTest);
-            await runTestFunc(page, `${url}/Employee_ListView`, index, detailViewTest);
+            await runTestFunc(page, `${url}`, index, navigationTest);
+            // await runTestFunc(page, `${url}/StickyNote_ListView`, index, listViewTest);
+            // await runTestFunc(page, `${url}/Employee_ListView`, index, detailViewTest);
 
             const workerDuration = (Date.now() - workerStartTime.getTime()) / 1000;
 
