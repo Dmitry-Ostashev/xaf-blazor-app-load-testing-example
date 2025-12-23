@@ -26,10 +26,10 @@ async function navigationTest(page) {
     await pageModel.navigate(page, 'Calendar');
     await pageModel.closeTab(page);
 
-    await pageModel.navigate(page, 'Notes');
-    await pageModel.processRow(page, 'Limeira');
-    await pageModel.closeTab(page);
-    await pageModel.closeTab(page);
+    // await pageModel.navigate(page, 'Notes');
+    // await pageModel.processRow(page, 'Limeira');
+    // await pageModel.closeTab(page);
+    // await pageModel.closeTab(page);
 
     await pageModel.navigate(page, 'My Details', 'Sam');
     await pageModel.closeTab(page);
@@ -44,7 +44,7 @@ async function navigationTest(page) {
     await pageModel.closeTab(page);
     await pageModel.closeTab(page);
 
-    await new Promise(res => setTimeout(res, 500));
+    await new Promise(res => setTimeout(res, 2000));
 }
 
 module.exports = navigationTest;

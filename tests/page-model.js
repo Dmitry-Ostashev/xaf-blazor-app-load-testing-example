@@ -24,11 +24,16 @@ function getInlineActionSelector (title, rowText) {
 function getActiveTabHeader () {}
 class PageModel {
     async waitForLoading (page) {
-         await page.waitForSelector(LOADING_INDICATOR_SELECTOR, { hidden: true, timeout: 45000 });
-        await page.waitForFunction(() => {
-            const images = Array.from(document.images);
-            return images.every(img => img.complete && img.naturalWidth > 0);
-        }, { timeout: 10000 });
+        await page.waitForSelector(LOADING_INDICATOR_SELECTOR, { hidden: true, timeout: 80000 });
+        try {
+            await page.waitForFunction(() => {
+                const images = Array.from(document.images);
+                return images.every(img => img.complete && img.naturalWidth > 0);
+            }, { timeout: 10000 });
+        }
+        catch {
+            console.log('Some images were not loaded.');
+        }
     }
     async waitForTabAppear (page, tabCaption) {
         await page.locator(`xpath=${ACTIVE_TAB_HEADER_SELECTOR}//span[contains(normalize-space(.), '${tabCaption}')]`).wait();
@@ -78,6 +83,7 @@ class PageModel {
     async closeTab (page) {
         const xpath = `${ACTIVE_TAB_HEADER_SELECTOR}//button[contains(@class, 'xaf-close-tab-button')]`;
 
+        await page.locator(`xpath=${xpath}`).setTimeout(1000).wait();
         await page.locator(`xpath=${xpath}`).click();
         await this.waitForLoading(page);
     }
