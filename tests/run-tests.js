@@ -21,7 +21,7 @@ async function runTestFunc (page, url, instance, testFunc) {
 
 async function runTests(url, concurrency, headless) {
     const cluster = await Cluster.launch({
-        puppeteerOptions: { headless, defaultViewport: null, /*slowMo: 20,*/ args: ['--ignore-certificate-errors', '--start-maximized'] },
+        puppeteerOptions: { headless, defaultViewport: null, /*slowMo: 20,*/ args: ['--ignore-certificate-errors', '--start-maximized', '--no-sandbox'] },
         concurrency: Cluster.CONCURRENCY_CONTEXT,
         maxConcurrency: concurrency,
         monitor: false,
