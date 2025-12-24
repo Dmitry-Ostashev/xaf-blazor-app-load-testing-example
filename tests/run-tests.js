@@ -53,7 +53,7 @@ async function runTests(url, concurrency, headless) {
             workerTimings.push(workerDuration);
             viewNavigationTimings.push(viewNavigationTime);
 
-            console.log(`Worker ${index} started at ${workerStartTime.toLocaleTimeString()} finished successfully after ${workerDuration} seconds.`);
+            console.log(`Worker ${index} started at ${workerStartTime.toLocaleTimeString()} finished successfully after ${workerDuration} seconds. View nav time: ${viewNavigationTime}`);
         }
         catch (err) {
             console.log(`Worker ${index} failed.`);
