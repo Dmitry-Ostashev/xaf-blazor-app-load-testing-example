@@ -9,7 +9,7 @@ async function runTestFunc (page, url, instance, testFunc) {
     await retry(() => page.goto(url), 1000);
 
     try {
-        await testFunc(page);
+        return await testFunc(page, instance);
     }
 
     catch (err) {
@@ -31,6 +31,7 @@ async function runTests(url, concurrency, headless) {
 
     const startTime = Date.now();
     const workerTimings = [];
+    const viewNavigationTimings = [];
 
     let succededTests = 0;
 
@@ -41,7 +42,7 @@ async function runTests(url, concurrency, headless) {
 
             const workerStartTime = new Date();
 
-            await runTestFunc(page, `${url}`, index, navigationTest);
+            const viewNavigationTime = await runTestFunc(page, `${url}`, index, navigationTest);
             // await runTestFunc(page, `${url}/StickyNote_ListView`, index, listViewTest);
             // await runTestFunc(page, `${url}/Employee_ListView`, index, detailViewTest);
 
@@ -50,6 +51,7 @@ async function runTests(url, concurrency, headless) {
             succededTests++;
 
             workerTimings.push(workerDuration);
+            viewNavigationTimings.push(viewNavigationTime);
 
             console.log(`Worker ${index} started at ${workerStartTime.toLocaleTimeString()} finished successfully after ${workerDuration} seconds.`);
         }
@@ -61,9 +63,10 @@ async function runTests(url, concurrency, headless) {
 
     const duration    = (Date.now() - startTime) / 1000;
     const averageTime = workerTimings.reduce((acc, val) => acc+=val) / workerTimings.length;
+    const averageViewTime = viewNavigationTimings.reduce((acc, val) => acc+=val) / viewNavigationTimings.length;
 
     console.log(`${concurrency - succededTests} of ${concurrency} instances are failed.`);
-    console.log(`All tests took ${duration} seconds. Average: ${averageTime} s`);
+    console.log(`All tests took ${duration} seconds. Average: ${averageTime} s. View nav time: ${averageViewTime}`);
 
     await cluster.idle();
     await cluster.close();

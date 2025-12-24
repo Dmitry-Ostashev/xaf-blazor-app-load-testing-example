@@ -3,10 +3,12 @@ const { pageModel } = require('./page-model');
 const DXGRID           = '.dxbs-grid .card';
 const NEXT_PAGE_BUTTON = '[data-args="PBN"] div svg';
 
-async function navigationTest(page) {
+async function navigationTest(page, instance) {
     await pageModel.waitForLoading(page);
     // await pageModel.setEditorValue(page, 'User Name', 'Sam');
     await pageModel.clickActionButton(page, 'Log In');
+
+    const appLoadedTime = new Date();
 
     await pageModel.navigate(page, 'Employees');
     await pageModel.processRow(page, 'Karl');
@@ -44,7 +46,11 @@ async function navigationTest(page) {
     await pageModel.closeTab(page);
     await pageModel.closeTab(page);
 
+    const viewsNavigationTime = (Date.now() - appLoadedTime.getTime()) / 1000;
+
     await new Promise(res => setTimeout(res, 2000));
+
+    return viewsNavigationTime;
 }
 
 module.exports = navigationTest;

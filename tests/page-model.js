@@ -85,7 +85,7 @@ class PageModel {
         await this.delay(1000);
         const xpath = `${ACTIVE_TAB_HEADER_SELECTOR}//button[contains(@class, 'xaf-close-tab-button')]`;
 
-        await page.locator(`xpath=${xpath}`).setTimeout(1000).wait();
+        await page.locator(`xpath=${xpath}`).setTimeout(2000).wait();
         await page.locator(`xpath=${xpath}`).click();
         await this.waitForLoading(page);
     }
