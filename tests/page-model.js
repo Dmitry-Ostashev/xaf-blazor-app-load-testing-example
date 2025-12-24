@@ -81,6 +81,7 @@ class PageModel {
         await this.waitForLoading(page);
     }
     async closeTab (page) {
+        await this.delay(1000);
         const xpath = `${ACTIVE_TAB_HEADER_SELECTOR}//button[contains(@class, 'xaf-close-tab-button')]`;
 
         await page.locator(`xpath=${xpath}`).setTimeout(1000).wait();

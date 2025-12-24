@@ -5,7 +5,7 @@ const NEXT_PAGE_BUTTON = '[data-args="PBN"] div svg';
 
 async function navigationTest(page) {
     await pageModel.waitForLoading(page);
-    await pageModel.setEditorValue(page, 'User Name', 'Sam');
+    // await pageModel.setEditorValue(page, 'User Name', 'Sam');
     await pageModel.clickActionButton(page, 'Log In');
 
     await pageModel.navigate(page, 'Employees');
