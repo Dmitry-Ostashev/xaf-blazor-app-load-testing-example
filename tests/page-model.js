@@ -62,6 +62,7 @@ class PageModel {
         await page.locator(`xpath=${xpath}`).click();
         await this.waitForLoading(page);
         await this.waitForTabAppear(page, expectedTabCaption || caption);
+        await this.delay(500);
     }
     async processRow (page, cellText) {
         const inlineActionSelector = getInlineActionSelector('Open', cellText);
