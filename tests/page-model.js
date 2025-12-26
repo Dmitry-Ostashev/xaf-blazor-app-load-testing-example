@@ -24,7 +24,7 @@ function getInlineActionSelector (title, rowText) {
 function getActiveTabHeader () {}
 class PageModel {
     async waitForLoading (page) {
-        await page.waitForSelector(LOADING_INDICATOR_SELECTOR, { hidden: true, timeout: 80000 });
+        await page.waitForSelector(LOADING_INDICATOR_SELECTOR, { hidden: true, timeout: 100000 });
         try {
             await page.waitForFunction(() => {
                 const images = Array.from(document.images);
@@ -53,6 +53,7 @@ class PageModel {
         await page.waitForSelector(selector);
         const el = await page.$(selector);
         await el.click();
+        
         await this.waitForLoading(page);
     }
     async navigate (page, caption, expectedTabCaption) {

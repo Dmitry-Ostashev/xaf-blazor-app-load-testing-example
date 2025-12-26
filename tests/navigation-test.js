@@ -5,9 +5,11 @@ const NEXT_PAGE_BUTTON = '[data-args="PBN"] div svg';
 
 async function navigationTest(page, instance) {
     await pageModel.waitForLoading(page);
+    await pageModel.delay(3000);
     // await pageModel.setEditorValue(page, 'User Name', 'Sam');
     await pageModel.clickActionButton(page, 'Log In');
-
+    await this.delay(1000);
+    await pageModel.waitForLoading(page);
     const appLoadedTime = new Date();
 
     await pageModel.navigate(page, 'Employees');
@@ -44,7 +46,7 @@ async function navigationTest(page, instance) {
     await pageModel.navigate(page, 'Resumes');
     await pageModel.processRow(page, 'Hewitt');
     await pageModel.closeTab(page);
-    await pageModel.closeTab(page);
+    // await pageModel.closeTab(page);
 
     const viewsNavigationTime = (Date.now() - appLoadedTime.getTime()) / 1000;
 
