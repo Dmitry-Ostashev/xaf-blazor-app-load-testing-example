@@ -8,7 +8,7 @@ async function navigationTest(page, instance) {
     await pageModel.delay(3000);
     // await pageModel.setEditorValue(page, 'User Name', 'Sam');
     await pageModel.clickActionButton(page, 'Log In');
-    await this.delay(1000);
+    await pageModel.delay(1000);
     await pageModel.waitForLoading(page);
     const appLoadedTime = new Date();
 
