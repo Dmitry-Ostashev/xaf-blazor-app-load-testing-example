@@ -1,18 +1,9 @@
-const LOADING_INDICATOR_SELECTOR = `
-                    #xaf-loading.show,
-                    .xaf-dashboard-container.xaf-dashboard-loading,
-                    div.dxbl-fl[style*='opacity: 0'], div.dxbl-fl-loading,
-                    .dxbl-loading,
-                    #applicationLoadingPanel,
-                    .dxreSplashscreen,
-                    .dxbl-loading-panel[panel-visible] .xaf-richedit,
-                    .progress-container .progress:not(.d-none)`;
+const LOADING_INDICATOR_SELECTOR = `.dxbl-loading-panel-indicator-area`;
 
 const PROPERTY_EDITOR_SELECTOR = '[data-item-name="%FIELD_CAPTION%"] + .dxbl-text-edit input';
 const ACTION_BUTTON_SELECTOR = '[data-action-name="%ACTION_CAPTION%"]';
 
-const NAVIGATION_LINK_CSS_CLASS = 'xaf-nav-link';
-const NAVIGATION_LINK_CLICK_AREA_CSS_CLASS = 'xaf-navigation-link-click-area';
+const NAVIGATION_LINK_CLICK_AREA_CSS_CLASS = '.dxbl-drawer-content .xaf-navigation-link-click-area a.dxbl-accordion-item-content';
 
 const CLOSE_TAB_BUTTON_SELECTOR = '.dxbl-tabs-close-button.xaf-close-tab-button';
 const TAB_HEADER_SELECTOR = `//div[contains(@class, 'xaf-tab-header-template')]`;
@@ -22,7 +13,7 @@ function getInlineActionSelector (title, rowText) {
     return `//div[contains(@class, 'dxbl-active')]//tr[contains(normalize-space(.), '${rowText}')]//div[contains(@class, 'xaf-inline-action')]//button[@data-action-name='%ACTION_CAPTION%']`.replace('%ACTION_CAPTION%', title);
 }
 function getActiveTabHeader () {}
-class PageModel {
+class BlazorLoadPageModel {
     async waitForLoading (page) {
         await page.waitForSelector(LOADING_INDICATOR_SELECTOR, { hidden: true, timeout: 100000 });
         try {
@@ -36,7 +27,7 @@ class PageModel {
         }
     }
     async waitForTabAppear (page, tabCaption) {
-        await page.locator(`xpath=${ACTIVE_TAB_HEADER_SELECTOR}//span[contains(normalize-space(.), '${tabCaption}')]`).wait();
+        await page.locator(`xpath=//h3[contains(normalize-space(.), '${tabCaption}')]`).wait();
     }
     async setEditorValue (page, title, value) {
         const selector = PROPERTY_EDITOR_SELECTOR.replace('%FIELD_CAPTION%', title);
@@ -58,30 +49,22 @@ class PageModel {
         await this.waitForLoading(page);
     }
     async navigate (page, caption, expectedTabCaption) {
-        const xpath = `//div[contains(@class,'${NAVIGATION_LINK_CSS_CLASS}') and contains(., '${caption}')]/following-sibling::div[contains(@class,'${NAVIGATION_LINK_CLICK_AREA_CSS_CLASS}')]`;
+        const selector = `${NAVIGATION_LINK_CLICK_AREA_CSS_CLASS}::-p-text("${caption}")`;
 
-        await page.locator(`xpath=${xpath}`).wait();
-        await page.locator(`xpath=${xpath}`).click();
+        await page.waitForSelector(selector);
+        await page.click(selector);
+
         await this.waitForLoading(page);
         await this.waitForTabAppear(page, expectedTabCaption || caption);
         await this.delay(500);
     }
     async processRow (page, cellText) {
-        const inlineActionSelector = getInlineActionSelector('Open', cellText);
-
-        let inlineActionLocator = null;
-        try {
-            await page.locator(`xpath=${inlineActionSelector}`).setTimeout(500).wait();
-            inlineActionLocator = page.locator(`xpath=${inlineActionSelector}`);
-        }
-        catch { }
-
-        if(inlineActionLocator)
-            await inlineActionLocator.click();
-        else {
-            await page.locator(`xpath=//td[contains(normalize-space(.), '${cellText}')]`).click();
-        }
+        await page.locator(`xpath=//td[contains(normalize-space(.), '${cellText}')]`).click();
         await this.waitForLoading(page);
+        await this.delay(500);
+    }
+    async back(page) {
+        await page.locator('.back-button').click();
     }
     async closeTab (page) {
         await this.delay(1000);
@@ -96,4 +79,4 @@ class PageModel {
     }
 }
 
-module.exports = { pageModel: new PageModel() };
+module.exports = { pageModel: new BlazorLoadPageModel() };

@@ -2,6 +2,14 @@ const { Cluster }  = require('puppeteer-cluster');
 const listViewTest = require('./list-view-test');
 const detailViewTest = require('./detail-view-test');
 const navigationTest = require('./navigation-test');
+const blazorAppNavigationTest = require('./blazor-app-navigation-test');
+
+const TESTS = {
+    'xaf-blazor': navigationTest,
+    'simple-blazor': blazorAppNavigationTest
+};
+
+const DEFAULT_TEST_NAME = 'xaf-blazor';
 
 async function runTestFunc (page, url, instance, testFunc) {
     const { retry, takeScreenshot } = require('./utils');
@@ -19,7 +27,7 @@ async function runTestFunc (page, url, instance, testFunc) {
     }
 }
 
-async function runTests(url, concurrency, headless) {
+async function runTests(url, concurrency, headless, testname = DEFAULT_TEST_NAME) {
     const cluster = await Cluster.launch({
         puppeteerOptions: { headless, defaultViewport: null, /*slowMo: 20,*/ args: ['--ignore-certificate-errors', '--start-maximized', '--no-sandbox'] },
         concurrency: Cluster.CONCURRENCY_CONTEXT,
@@ -42,7 +50,7 @@ async function runTests(url, concurrency, headless) {
 
             const workerStartTime = new Date();
 
-            const viewNavigationTime = await runTestFunc(page, `${url}`, index, navigationTest);
+            const viewNavigationTime = await runTestFunc(page, `${url}`, index, TESTS[testname]);
             // await runTestFunc(page, `${url}/StickyNote_ListView`, index, listViewTest);
             // await runTestFunc(page, `${url}/Employee_ListView`, index, detailViewTest);
 
